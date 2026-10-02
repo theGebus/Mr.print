@@ -1,0 +1,16 @@
+const menuButton=document.querySelector('.menu-toggle');
+const navigation=document.querySelector('nav');
+menuButton.addEventListener('click',()=>{const open=menuButton.getAttribute('aria-expanded')!=='true';menuButton.setAttribute('aria-expanded',String(open));navigation.classList.toggle('open',open)});
+navigation.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{navigation.classList.remove('open');menuButton.setAttribute('aria-expanded','false')}));
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){navigation.classList.remove('open');menuButton.setAttribute('aria-expanded','false')}});
+const serviceSelect=document.getElementById('service');
+document.querySelectorAll('.services [data-service]').forEach(a=>a.addEventListener('click',()=>{serviceSelect.value=a.dataset.service}));
+document.querySelectorAll('[data-filter]').forEach(button=>button.addEventListener('click',()=>{document.querySelectorAll('[data-filter]').forEach(b=>{b.classList.toggle('active',b===button);b.setAttribute('aria-pressed',String(b===button))});document.querySelectorAll('.work').forEach(card=>{card.hidden=button.dataset.filter!=='all'&&card.dataset.category!==button.dataset.filter})}));
+const lightbox=document.getElementById('lightbox');
+document.querySelectorAll('.work').forEach(card=>card.addEventListener('click',()=>{document.getElementById('lightbox-image').src=`assets/${card.dataset.image}.webp`;document.getElementById('lightbox-image').alt=card.querySelector('img').alt;document.getElementById('lightbox-title').textContent=card.dataset.title;lightbox.dataset.service=card.dataset.service;lightbox.showModal();document.body.classList.add('modal-open')}));
+lightbox.querySelector('.close-modal').addEventListener('click',()=>lightbox.close());
+lightbox.addEventListener('click',e=>{if(e.target===lightbox){const r=lightbox.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)lightbox.close()}});
+lightbox.addEventListener('close',()=>document.body.classList.remove('modal-open'));
+document.getElementById('lightbox-quote').addEventListener('click',()=>{serviceSelect.value=lightbox.dataset.service;lightbox.close()});
+document.getElementById('quote-form').addEventListener('submit',e=>{e.preventDefault();const name=document.getElementById('name');const details=document.getElementById('details');for(const field of [name,details]){field.setCustomValidity(field.value.trim()?'':'Completa este campo para preparar tu consulta.')}if(!e.target.reportValidity())return;const quantity=document.getElementById('quantity').value;const message=`Hola Mr.print, soy ${name.value.trim()}. Me gustaría cotizar: ${serviceSelect.value}.${quantity?`\nCantidad aproximada: ${quantity}.`:''}\nMi idea: ${details.value.trim()}`;window.open('https://wa.me/593985336875?text='+encodeURIComponent(message),'_blank','noopener,noreferrer')});
+document.querySelectorAll('#name,#details').forEach(field=>field.addEventListener('input',()=>field.setCustomValidity('')));
